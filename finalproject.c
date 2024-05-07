@@ -1,49 +1,44 @@
-
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #define STRINGLENGTH 100
-#define MAX_ROWS 500
-#define MAX_COLS 500
-int imagearray[MAX_ROWS][MAX_COLS];
+#define MAX 1000
 
-void scanimage(char image_file[STRINGLENGTH], int rows, int cols, int imagearray[MAX_ROWS][MAX_COLS]){//scans image for cols and rows
-	int i = 0, j = 0;
-	char endline;
-	FILE *fri;
-	fri = fopen(image_file, "r");
-	if(fri == NULL){
+
+void scan_image(const char *file_path, int *rows, int *cols, int **chars){//scans image for cols and rows
+
+	FILE *file = fopen(file_path, "r");
+	
+	if(file == NULL){
 		printf("Error: unable to open image.\n");
 		return;
-	}else{
-		while(fscanf(fri, "%c", &endline) == 1){
-			j++;
-			if(endline == '\n'){
-			i++;
-			j = 0;
-			}
-			rows = i + 1;
-			cols = j + 1;
-		}
-		for(i = 0; i < rows; i++){
-			for(j = 0; j < cols; j++){
-				fscanf(fri, "%d", &imagearray[i][j]);
-			}
-		}
-		for(i = 0; i < rows; i++){
-			for(j = 0; j < cols; j++){
-				printf("%d", imagearray[i][j]);
-			}
-		}
-			
 	}
-		fclose(fri);
+	
+	*rows = 0;
+	*cols = 0;
+	char buffer[MAX];
+	
+		while(fgets(buffer, sizeof(buffer), file) != NULL){
+			(rows)++;
+			int len = strlen(buffer) - 1;
+			if(len > *cols){
+				*cols = len;
+			}
+		}
+		
+		fclose(file);
 }
-/*
+
 //creates a new file to save the new array into.
-void SavetoFile(int rows, int cols, int imagearray[MAX_ROWS][MAX_COLS]){
+void SavetoFile(int rows, int cols, int imagearray[MAX][MAX]){
 	
 	FILE *file = fopen("output_image.txt", "w");
+	
+	if(file == NULL){
+		printf("Error: unable to open image.\n");
+		return;
+	}
 		fprintf(file, "%d %d\n", cols, rows);
-		
 		for(int i = 0; i < rows; i++){
 			for(int j = 0; j < cols; j++){
 				fprintf(file, "%d ", imagearray[i][j]);
@@ -56,41 +51,26 @@ void SavetoFile(int rows, int cols, int imagearray[MAX_ROWS][MAX_COLS]){
 
 //Needs data on the number of columns and rows from the file
 //the function below scans the image array in its integer and converts it to the character values to display
-void displayImage (int rows, int cols, int imagearray[MAX_ROWS][MAX_COLS]){
-	char image[rows][cols];
-	for(int rowi = 0; rowi < rows; rowi++){
-	 	for(int coli = 0; coli < cols; coli++){
-			switch(imagearray[rowi][coli]){
-				case 0:
-					image[rowi][coli] = ' ';
-					break;
-				case 1:
-					image[rowi][coli] = '.';
-					break;
-				case 2:
-					image[rowi][coli] = 'o';
-					break;
-				case 3:
-					image[rowi][coli] = 'O';
-					break;
-				case 4:
-					image[rowi][coli] = '0';
-					break;
-				default:
-					image[rowi][coli] = '?';
-			}
-		}
+void displayImage (const char *file_path){
+	
+	FILE *file = fopen(file_path, "r");
+	
+	if(file == NULL){
+		printf("Error: Cannot open file");
+		return;
 	}
-	for(int rowi = 0; rowi < rows; rowi++){
-	 	for(int coli = 0; coli < cols; coli++){
-	 		printf("%c", image[rowi][coli]);
-	 	}
-	 	printf("\n");
-	 }
+	
+	char buffer[MAX];
+	
+	while (fgets(buffer, sizeof(buffer), file) != NULL){
+		printf("%s", buffer);
+	}
+	
+	fclose(file);
 }
 
 //zooms in on picture
-void crop(int rows, int cols ,int imagearray[][MAX_COLS], int startcol, int endcol, int startrow, int endrow){
+/*void crop(int rows, int cols ,int imagearray[][MAX_COLS], int startcol, int endcol, int startrow, int endrow){
 
 	
 	printf("\n");
@@ -198,16 +178,16 @@ void editMenu(){
             
                 }
     }while (ec != 4);
-   
+    
 }
 */
 int main(){
 
 //int brighten, dim;
-int choice;
-int rows = 0, cols = 0;
-char FILE_NAME[STRINGLENGTH];
-int imagearray[MAX_ROWS][MAX_COLS];
+int choice, *chars;
+int rows, cols;
+char file_name[MAX];
+int imagearray[MAX][MAX];
 
 do{
     printf("\nMain Menu\n");
@@ -221,17 +201,24 @@ do{
     
             case 1: //new image
             
-                printf("What is the name of your image? "); 
-                scanf(" %s", &FILE_NAME[STRINGLENGTH + 1]);
-                scanimage(FILE_NAME, rows, cols, imagearray);
+                printf("Enter the file name you would like to open: "); 
+                scanf(" %s", file_name);
+                scan_image(file_name, &rows, &cols, &chars);
+                
+                printf("File Specs\n");
+                printf("----------\n2");
+                printf("Rows: %d\n", rows);
+    		printf("Columns: %d\n", cols);
                 
 		
 		
                 break;
                 
             case 2: //current image
-            
-           // displayImage(rows, cols, imagearray);
+            	printf("\n");
+		displayImage(file_name);
+		free(chars);
+		printf("\n");
                 break;
                 
             case 3: //edit current
@@ -252,8 +239,5 @@ do{
 
 return 0;
 }
-
-
-
 
 

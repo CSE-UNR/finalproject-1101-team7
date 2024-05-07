@@ -7,7 +7,8 @@
 
 #include <stdio.h>
 #define STRINGLENGTH 100
-
+#define MAX_ROWS 500
+#define MAX_COLS 500
 void scanimage(char *image_file, int *width, int *height){//scans image for height and width
 
 	FILE *file = fopen(image_file, "r");
@@ -130,7 +131,6 @@ void displayImage (int rows, int cols, int imagearray[][cols]){
 //zooms in on picture
 void crop(int rows, int cols ,int imagearray[][cols], int startcol, int endcol, int startrow, int endrow){
 
-//int image[rows][cols];
 	
 	printf("\n");
 	printf("the image you want to crop is %d x %d.\n", cols, rows);
@@ -213,9 +213,10 @@ void editMenu(){
 	char image_file;
 
 	
-    //scanimage(char image_file, int width, int height);
+
     
     do{
+        printf("How would you like to edit your image?\n");
         printf("\nEdit Menu\n");
         printf("---------\n");
         printf("1: Crop Image\n");
@@ -232,13 +233,13 @@ void editMenu(){
                     break;
                 
                 case 2: //dim
-                  imagearray[rows][cols] = dim(rows, cols, imagearray);
+                  	dim(rows, cols, imagearray);
                 	//displayImage ( rows,  cols,  imagearray[rows][cols]);
                 	//SavetoFile( rows, cols, imagearray[rows][cols]);
                     break;
                     
                 case 3: //bright
-                  imagearray[rows][cols] = brighten(rows, cols, imagearray);
+                  	brighten(rows, cols, imagearray);
                 	//displayImage ( rows, cols, imagearray[rows][cols]);
                 	//SavetoFile(rows, cols, imagearray[rows][cols]);
                     break;
@@ -288,13 +289,12 @@ do{
                 break;
                 
             case 2: //current image
-            	
             
                 break;
                 
             case 3: //edit current
             
-              editMenu(ec);
+            	editMenu();
                 break;
                 
             case 4: //exit program

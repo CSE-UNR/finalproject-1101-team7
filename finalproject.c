@@ -264,24 +264,27 @@ return 0;
 int imagearray[MAX_ROWS][MAX_COLS];
 
 void scanimage(char *image_file, int rows, int cols, int imagearray[MAX_ROWS][MAX_COLS]){//scans image for cols and rows
-
+	int i, j;
 	FILE *file = fopen(image_file, "r");
 	if(file == NULL){
 		printf("Error: unable to open image.\n");
-		return;
+	}else{
+		
+			printf("yup\n");
+		for(int i = 0; i < rows; i++){
+		printf("yeah");
+			for (int j = 0; j < cols; j++){
+			printf("yes");
+				fscanf(file, "%d", &imagearray[i][j]);
+				printf("succesfully loaded");
+			}
+		}
+		}
+	fclose(file);	
 	}
+			
 	
-	int file_rows = 0;
-	int file_cols = 0;
-	
-for(int i = 0; i < cols; i++){
-	for (int j = 0; j < rows; j++){
-		fscanf(file, "%d", &imagearray[i][j]);
-	}
-}
 
-	fclose(file);
-}
 
 
 //creates a new file to save the new array into.
@@ -470,18 +473,16 @@ do{
                 printf("What is the name of your image?");
                 scanf("%s",FILE_NAME);
 		FILE *fpr = fopen(FILE_NAME, "r");
-		
             	if(fpr == NULL){
 			printf("cannot open\n");
 		}else{
-		printf("work plxzxzxz");
 		scanimage(FILE_NAME, rows, cols, imagearray);
                 }
                 
                 break;
                 
             case 2: //current image
-            printf("Hellooooooooo");
+            
             displayImage(rows, cols, imagearray);
                 break;
                 

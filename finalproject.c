@@ -19,11 +19,12 @@ void scan_image(const char *file_path, int *rows, int *cols, int **chars){//scan
 	char buffer[MAX];
 	
 		while(fgets(buffer, sizeof(buffer), file) != NULL){
-			(rows)++;
+			(*rows)++;
 			int len = strlen(buffer) - 1;
 			if(len > *cols){
 				*cols = len;
 			}
+			
 		}
 		
 		fclose(file);
@@ -51,7 +52,7 @@ void SavetoFile(int rows, int cols, int imagearray[MAX][MAX]){
 
 //Needs data on the number of columns and rows from the file
 //the function below scans the image array in its integer and converts it to the character values to display
-void displayImage (const char *file_path){
+void displayImage (const char *file_path, int rows, int cols, int imagearray[MAX][MAX]){
 	
 	FILE *file = fopen(file_path, "r");
 	
@@ -61,12 +62,36 @@ void displayImage (const char *file_path){
 	}
 	
 	char buffer[MAX];
+	int pixel_value;
 	
-	while (fgets(buffer, sizeof(buffer), file) != NULL){
-		printf("%s", buffer);
-	}
 	
-	fclose(file);
+	while (fgets(buffer, sizeof(buffer), file) != NULL) {
+    		for (int i = 0; i < strlen(buffer); i++) {
+            	char c = buffer[i];
+            
+           	 switch (c) {
+                case '0':
+                    c = ' ';
+                    break;
+                case '1':
+                    c = '.';
+                    break;
+                case '2':
+                    c = 'o';
+                    break;
+                case '3':
+                    c = 'O';
+                    break;
+                    
+                case '4':
+                    c = '0';
+                    break;
+            }
+            printf("%c", c);
+        }
+    }
+
+    fclose(file);
 }
 
 //zooms in on picture
@@ -117,73 +142,103 @@ char image[rows][cols];
 	
 	}
 
-int brighten(int rows, int cols, int imagearray[][MAX_COLS]){
+void brighten(const char *file_path, int rows, int cols, int imagearray[][MAX]){
+	
+	FILE *file = fopen(file_path, "r");
+	
+	if(file == NULL){
+		printf("Error: Cannot open file");
+		return;
+	}
+	
 	for(int rowi = 0; rowi < rows; rowi++){
 		for(int coli = 0; coli < cols; coli++){
 	 		imagearray[rowi][coli] +=  1;
 	 	}
 	}
-
+	
 }
 
-int dim(int rows, int cols, int imagearray[][MAX_COLS]){
+void dim(const char *file_path, int rows, int cols, int imagearray[][MAX]){
+	
+	FILE *file = fopen(file_path, "r");
+	
+	if(file == NULL){
+		printf("Error: Cannot open file");
+		return;
+	}
+	
 	for(int rowi = 0; rowi < rows; rowi++){
 		for(int coli = 0; coli < cols; coli++){
 	 		imagearray[rowi][coli] -= 1;
 	 	}
 	}
-
+	
 }
-
+*/
 void editMenu(){
 
-	int *rows, *cols, ec;
-	int imagearray[MAX_ROWS][MAX_COLS];
-	char image_file;
+int ec;
+int choice, *chars;
+int rows, cols;
+char file_name[MAX];
+int imagearray[MAX][MAX];
     
     do{
-        printf("How would you like to edit your image?\n");
-        printf("\nEdit Menu\n");
-        printf("---------\n");
-        printf("1: Crop Image\n");
+        
+        //printf("\nEdit Menu\n");
+        //printf("---------\n");
+        printf("\n1: Crop Image\n");
         printf("2: Dim Image\n");
         printf("3: Brighten Image\n");
         printf("4: Save and Exit\n");
+        printf("\nHow would you like to edit your image?");
         scanf(" %d", &ec);
         
             switch (ec){
             
                 case 1: //crop
-                
-                
-                    break;
+                	SavetoFile(rows, cols, imagearray);
+			break;
                 
                 case 2: //dim
-                  	dim(*rows, *cols, imagearray);
-                	
-                    break;
+			
+			dim(file_name, rows, cols, imagearray);
+			SavetoFile(rows, cols, imagearray);
+			printf("\n");
+			displayImage(file_name, rows, cols, imagearray);
+			free(chars);
+			printf("\n");
+			
+			break;
                     
                 case 3: //bright
-                  	brighten(*rows, *cols, imagearray);
-                	
-                    break;
+                  	
+                  	brighten(file_name, rows, cols, imagearray);
+                  	SavetoFile(rows, cols, imagearray);
+                  	printf("\n");
+			displayImage(file_name, rows, cols, imagearray);
+			free(chars);
+			printf("\n");
+			break;
                 
                 case 4: //exit program
                 
-                    printf("Exiting Program . . .");
-                    break;
+			printf("Exiting Program . . .");
+			break;
                     
                 default:
-                printf("Invalid choice. Try again.\n"); 
+			
+			printf("Invalid choice. Try again.\n"); 
             
                 }
     }while (ec != 4);
     
 }
-*/
+
 int main(){
 
-//int brighten, dim;
+int brighten, dim;
 int choice, *chars;
 int rows, cols;
 char file_name[MAX];
@@ -205,8 +260,9 @@ do{
                 scanf(" %s", file_name);
                 scan_image(file_name, &rows, &cols, &chars);
                 
-                printf("File Specs\n");
-                printf("----------\n2");
+                printf("File succefully loaded!\n");
+                //printf("File Specs\n");
+               // printf("----------\n");
                 printf("Rows: %d\n", rows);
     		printf("Columns: %d\n", cols);
                 
@@ -215,15 +271,16 @@ do{
                 break;
                 
             case 2: //current image
+            	
             	printf("\n");
-		displayImage(file_name);
+		displayImage(file_name, rows, cols, imagearray);
 		free(chars);
 		printf("\n");
                 break;
                 
             case 3: //edit current
             
-            //	editMenu(&rows, &cols, imagearray);
+            	editMenu(&rows, &cols, imagearray);
                 break;
                 
             case 4: //exit program

@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #define STRINGLENGTH 100
 #define MAX 1000
+//I know there are things in this file that have not been taught, but this is the only way I knew how to get this program to work. or at least the 
+//part with scanning the image. I was not able to get the rest of the code. My partener also tried without the unlearned commands.
+//it is located in finalproject2.c. 
 
 
 void scan_image(const char *file_path, int *rows, int *cols, int **chars){//scans image for cols and rows
